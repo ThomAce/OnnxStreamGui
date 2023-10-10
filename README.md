@@ -1,3 +1,5 @@
+![kép](https://github.com/ThomAce/OnnxStreamGui/assets/34764511/c59dee8a-cfa5-4928-afd2-b0c343e7f1f5)
+
 # OnnxStreamGui
 Simple Graphical User Interface for OnnxStream
 
