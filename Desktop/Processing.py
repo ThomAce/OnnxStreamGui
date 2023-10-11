@@ -58,10 +58,13 @@ class Diffusion:
             if os.name == 'nt':
                 os.popen("Taskkill /PID %d /F" % int(self.GetProcessID())).read()
             else:
-                os.popen(("kill " + self.GetProcessID())).read()
+                pid = self.GetProcessID()
 
-            if self.thread.is_alive() == True:
-                print("Thread is still alive!")
+                if (int(pid) > 1):
+                    os.popen("kill " + pid).read()
+
+##            if self.thread.is_alive() == True:
+##                print("Thread is still alive!")
 
     def GetStableDiffusion(self):
         self.sd.Load()
@@ -86,7 +89,8 @@ class Diffusion:
             return self.LinuxGetProcessID()
         
     def LinuxGetProcessID(self):
-        return os.popen("pid sd")
+        path, executable = os.path.split(self.GetStableDiffusion())
+        return os.popen("pidof " + executable).read().strip()
 
     def WindowsGetProcessID(self):
         proc_path = self.GetStableDiffusion()
@@ -107,7 +111,18 @@ class Diffusion:
             return self.settings.GetSDXLDir()
         else:
             return self.settings.GetSDDir()
+
+    def is_raspberrypi(self):
+        try:
+            with io.open('/sys/firmware/devicetree/base/model', 'r') as m:
+                if 'raspberry pi' in m.read().lower():
+                    return " --rpi "
+        except:
+            pass
         
+        return ""
+
+
     def Diffuse(self):
         self.settings.Load()
         
@@ -127,6 +142,7 @@ class Diffusion:
         self.args += " --neg-prompt \"" + self.sd.GetNegPrompt() + "\" "
         self.args += " --output \"" + self.sd.GetImage() + "\" "
         self.args += " --steps \"" + self.sd.GetSteps() + "\" "
+        self.args += self.is_raspberrypi()
 
         self.command = self.sd_exe + " " + self.args
         self.dir = self.GetWorkingDirectory()
