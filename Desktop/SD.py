@@ -9,7 +9,7 @@ class SD:
         self.posprompt = ""
         self.negprompt = ""
         self.image = ""
-        self.steps = ""
+        self.steps = "3"
         self.xl = False
         self.project_file = "Project.txt" #default project file
         self.cwd = os.getcwd()
