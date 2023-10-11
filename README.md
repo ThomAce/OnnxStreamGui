@@ -32,12 +32,16 @@ WARNING! - The web based version only tested on RaspberryPi 4!
 
 # Pre-Alpha photos (developer insight if you like...):
 
-OnnxStream GUI running on Windows 11:
+### OnnxStream GUI running on Windows 11:
 ![kép](https://github.com/ThomAce/OnnxStreamGui/assets/34764511/d6302eb3-0820-418d-8292-fbf1f86dedb7)
 
+![kép](https://github.com/ThomAce/OnnxStreamGui/assets/34764511/3e8184c7-7b10-4ab9-bba9-19fa1804ccc8)
 
-OnnxStream GUI running on Raspbian:
+
+### OnnxStream GUI running on Raspbian:
 ![kép](https://github.com/ThomAce/OnnxStreamGui/assets/34764511/b3eca91d-3df7-461e-89a3-b43abfee693a)
+
+![kép](https://github.com/ThomAce/OnnxStreamGui/assets/34764511/843be03d-cfb3-4d26-8028-3e598d25b10d)
 
 
 
