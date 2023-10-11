@@ -1,10 +1,7 @@
 from guizero import App, Text, Box, TextBox, PushButton, TitleBox, Picture
 import tkinter
 
-class GUI:
-    app_start = ""
-    app = None
-    
+class GUI:    
     def __init__(self):
         self.app_start = "1"
         self.app = None
