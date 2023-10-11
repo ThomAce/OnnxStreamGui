@@ -6,6 +6,7 @@ import time
 from subprocess import Popen, PIPE
 import SD
 import Settings
+import io
 
 #------------------------------------------------------------
 # Diffusion Class for handling Stable Diffusion processing thread and data
