@@ -47,6 +47,8 @@ class SD:
         return self.image
 
     def GetSteps(self):
+        if (self.steps == ""):
+            self.steps = "3"
         return self.steps
 
     def GetXL(self):
