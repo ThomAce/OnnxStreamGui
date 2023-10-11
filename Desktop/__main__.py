@@ -15,9 +15,15 @@ import gui
 import os
 import Processing
 import SD
+import shutil
+import Settings
+import webbrowser
 
 sd = SD.SD()
 sd.Load()
+
+settings = Settings.Settings()
+settings.Load()
 
 #------------------------------------------------------------
 #default settings parameters for the gui
@@ -32,7 +38,7 @@ innerHeight = 400
 
 WorkingDirectory = os.getcwd()
 
-Steps = 3
+Steps = int(sd.GetSteps())
 
 
 #------------------------------------------------------------
@@ -51,6 +57,7 @@ Diffusion = Processing.Diffusion()
 mygui = gui.GUI()
 mygui.CreateWindow("OnnxStream GUI", guiWidth, guiHeight,True)
 main_window = mygui.GetMainWindow()
+app = main_window
 main_window.bg = "#F4F4F4"
 
 #disable resizing of the window
@@ -79,15 +86,26 @@ Box(HeaderControls, layout="grid", grid=[3,0], width=46, height=35, align="left"
 
 #header text, info text, etc...
 #under implementation...
-HeaderText_box_inner = Box(HeaderText_box, layout="grid", grid=[0,0], width=(innerWidth-120)-46, height=35, align="left", border=0)
+HeaderText_box_inner = Box(HeaderText_box, layout="grid", grid=[0,0], width=(innerWidth-300)-46, height=35, align="left", border=0)
 HeaderText = Text(HeaderText_box_inner, text="OnnxStream GUI", grid=[0,0], align="left")
 HeaderText.font = "Arial Black"
 HeaderText.text_color = "#000000"
 HeaderText.size = 16
 
-PushButton(HeaderControls_inner, grid=[0,0],text="Settings", padx=6, pady=2, align="right").font = "Arial"
-Box(HeaderControls_inner, layout="auto", grid=[1,0], border=0, align="right", width=20, height=20)
-PushButton(HeaderControls_inner, grid=[2,0],text="Open Github", align="right", padx=6, pady=2).font = "Arial"
+def OpenSettings():
+    settings.Show(main_window)
+
+def OpenGithub():
+    webbrowser.open("https://github.com/ThomAce/OnnxStreamGui")
+
+def OpenOnnxGithub():
+    webbrowser.open("https://github.com/vitoplantamura/OnnxStream")
+    
+PushButton(HeaderControls_inner, grid=[0,0],text="Settings", padx=6, pady=2, align="right", command=OpenSettings).font = "Arial"
+Box(HeaderControls_inner, layout="auto", grid=[1,0], border=0, align="right", width=10, height=20)
+PushButton(HeaderControls_inner, grid=[2,0],text="GUI on Github", align="right", padx=6, pady=2, command=OpenGithub).font = "Arial"
+Box(HeaderControls_inner, layout="auto", grid=[3,0], border=0, align="right", width=10, height=20)
+PushButton(HeaderControls_inner, grid=[4,0],text="OnnxStream on Github", align="right", padx=6, pady=2, command=OpenOnnxGithub).font = "Arial"
 #------------------------------------------------------------
 
 
@@ -139,22 +157,52 @@ inputbox = Box(inputbox_outer, layout="grid", grid=[0,0], width=innerWidth-330, 
 #   + PushButton (New Project)
 #------------------------------------------------------------
 
-#save_project function
-#Save_Project_PushButton action
-#referencing to a later defined function. Python trick...
+#project function
+#referencing to a later defined functions. Python trick...
 def save_project():
     save_project_data()
+
+def export_project():
+    save_project_data()
+
+    if (sd.GetStatus()):
+        selected_file = app.select_file(title="Save Project", folder=".", filetypes=[["All files", "*.txt"]], save=True, filename="")
+
+        if(selected_file != ""):
+            sd.Save(selected_file)
+    
+
+def load_project():
+    if (sd.GetStatus()):
+        if (not app.yesno("WARNING!", "There is a loaded project. Do you wish to overwrite it?")):
+            return
+
+    if (not sd.LoadProjectFile(app.select_file(title="Select Project", folder=".", filetypes=[["All files", "*.txt"]], save=False, filename=""))):
+            app.warn("WARNING!", "Project file is not loaded!")
+    else:
+        load_project_data()
+
+def new_project():
+    if (not app.yesno("WARNING!", "Do you really wanted to reset all fields?")):        
+        return
+
+    reset_project_data()
+    sd.Reset()
+    
 
 ProjectActionBox = Box(inputbox, layout="grid", grid=[0,0], border=0, align="left")
 Text(ProjectActionBox, grid=[0,0], text="Project Actions", align="left", size=9, font="Arial Black")
 Box(ProjectActionBox, layout="auto", grid=[1,0], border=0, align="left", width=20, height=20)
-SaveProject_PushButton = PushButton(ProjectActionBox, grid=[2,0],text="Save Project", padx=6, pady=1, command=save_project)
+SaveProject_PushButton = PushButton(ProjectActionBox, grid=[2,0],text="Save", padx=6, pady=1, command=save_project)
 SaveProject_PushButton.font = "Arial"
 Box(ProjectActionBox, layout="auto", grid=[3,0], border=0, align="left", width=20, height=20)
-LoadProject_PushButton = PushButton(ProjectActionBox, grid=[4,0],text="Load Project", padx=6, pady=1)
+LoadProject_PushButton = PushButton(ProjectActionBox, grid=[4,0],text="Load", padx=6, pady=1, command=load_project)
 LoadProject_PushButton.font = "Arial"
 Box(ProjectActionBox, layout="auto", grid=[5,0], border=0, align="left", width=20, height=20)
-NewProject_PushButton = PushButton(ProjectActionBox, grid=[6,0],text="New Project", padx=6, pady=1)
+LoadProject_PushButton = PushButton(ProjectActionBox, grid=[6,0],text="Export", padx=6, pady=1, command=export_project)
+LoadProject_PushButton.font = "Arial"
+Box(ProjectActionBox, layout="auto", grid=[7,0], border=0, align="left", width=20, height=20)
+NewProject_PushButton = PushButton(ProjectActionBox, grid=[8,0],text="New", padx=6, pady=1, command=new_project)
 NewProject_PushButton.font = "Arial"
 #------------------------------------------------------------
 
@@ -208,9 +256,15 @@ TargetImage.font = "Arial"
 Box(TargetImage_Box, grid=[1,0],layout="grid",align="left", width=10, height=10, border=0)
 
 def open_target_image():
-    TargetImage_Box.select_file(title="Select file", folder=".", filetypes=[["All files", "*.*"]], save=False, filename="")
+    save_path = app.select_file(title="Save generated image file", folder=".", filetypes=[["All files", "*.*"]], save=True, filename="")
 
-OpenTargetImage_PushButton = PushButton(TargetImage_Box, grid=[2,0], width=18, height=18, align="right", image=WorkingDirectory + "/images/save_icon.png")
+    if os.path.isfile(save_path):
+        if (not app.yesno("WARNING!", "The file already exists!\r\nDo you wish to overwrite?")):
+            return
+
+    TargetImage.value = save_path
+
+OpenTargetImage_PushButton = PushButton(TargetImage_Box, command=open_target_image, grid=[2,0], width=18, height=18, align="right", image=WorkingDirectory + "/images/save_icon.png")
 #------------------------------------------------------------
 
 
@@ -364,15 +418,47 @@ Box(imageBox, grid=[0,4],layout="grid",align="left", width=60, height=10, border
 #image controls
 ImageActionBox = Box(imageBox, layout="grid", grid=[0,5], border=0, align="left")
 
+def save_image():
+    #app.info("Not implemented", "Not yet implemented")
+    selected_file = app.select_file(title="Save to file", folder=".", filetypes=[["All files", "*.*"]], save=True, filename="")
+
+    if (selected_file != ""):
+        shutil.move(sd.GetImage(), selected_file)
+        EnableVisuals()
+        app.info("Info", "Done!")
+
+def refine_image():
+    if (not app.yesno("WARNING!", "The actual file will be overwritten.\r\nAre you sure?")):
+        return
+
+    #saving project
+    save_project_data()
+
+    #starting the diffusion
+    start_diffusing()
+    return
+
+def delete_image():
+    if (not app.yesno("WARNING!", "The actual file will be deleted.\r\nAre you sure?")):
+        return
+
+    try:
+        os.remove(sd.GetImage())
+        EnableVisuals()
+        app.info("Info", "Done!")
+    except:
+        app.error("Error", "File could not be deleted!")
+        pass
+
 Text(ImageActionBox, grid=[0,0], text="Actions ", align="left", size=9, font="Arial Black")
 Box(ImageActionBox, layout="auto", grid=[1,0], border=0, align="left", width=20, height=20)
-Save_Image_PushButton = PushButton(ImageActionBox, grid=[2,0],text="Save", padx=6, pady=2)
+Save_Image_PushButton = PushButton(ImageActionBox, grid=[2,0],text="Save", padx=6, pady=2, command=save_image)
 Save_Image_PushButton.font = "Arial"
 Box(ImageActionBox, layout="auto", grid=[3,0], border=0, align="left", width=20, height=20)
-Refine_Image_PushButton = PushButton(ImageActionBox, grid=[4,0],text="Refine", padx=6, pady=2)
+Refine_Image_PushButton = PushButton(ImageActionBox, grid=[4,0],text="Refine", padx=6, pady=2, command=refine_image)
 Refine_Image_PushButton.font = "Arial"
 Box(ImageActionBox, layout="auto", grid=[5,0], border=0, align="left", width=20, height=20)
-Delete_Image_PushButton = PushButton(ImageActionBox, grid=[6,0],text="Delete", padx=6, pady=2)
+Delete_Image_PushButton = PushButton(ImageActionBox, grid=[6,0],text="Delete", padx=6, pady=2, command=delete_image)
 Delete_Image_PushButton.font = "Arial"
 #------------------------------------------------------------
 
@@ -388,6 +474,22 @@ def save_project_data():
     sd.SetXL(UseXL_CheckBox.value)
     sd.Save()
 
+def load_project_data():
+    ProjectName.value = sd.GetName()
+    PositivePrompt.value = sd.GetPosPrompt()
+    NegativePrompt.value = sd.GetNegPrompt()
+    TargetImage.value = sd.GetImage()
+    Steps_TextBox.value = sd.GetSteps()
+    UseXL_CheckBox.value = sd.GetXL()
+
+def reset_project_data():
+    ProjectName.value = ""
+    PositivePrompt.value = ""
+    NegativePrompt.value = ""
+    TargetImage.value = ""
+    Steps_TextBox.value = ""
+    UseXL_CheckBox.value = False
+
 def DisableVisuals():
     ProjectName.enabled = False
     PositivePrompt.enabled = False
@@ -398,7 +500,18 @@ def DisableVisuals():
     SpinBox_UP.enabled = False
     SpinBox_Down.enabled = False
     Start_Button.enabled = False
+    
     picture.image = WorkingDirectory + "/images/loading.png"
+
+def DisableImageActionButtons():
+    Save_Image_PushButton.enabled = False
+    Refine_Image_PushButton.enabled = False
+    Delete_Image_PushButton.enabled = False
+
+def EnableImageActionButtons():
+    Save_Image_PushButton.enabled = True
+    Refine_Image_PushButton.enabled = True
+    Delete_Image_PushButton.enabled = True
 
 def EnableVisuals():
     ProjectName.enabled = True
@@ -410,26 +523,39 @@ def EnableVisuals():
     SpinBox_UP.enabled = True
     SpinBox_Down.enabled = True
     Start_Button.enabled = True
+   
     picture.image = WorkingDirectory + "/images/main.png"
-
-    
 
 def GetThreadStatus():
     if (Diffusion.GetStatus() == True):
         StatusMSG.value = "Processing..."
         DisableVisuals()
+        DisableImageActionButtons()
+        Stop_Button.enabled = True
     else:
         StatusMSG.value = "Ready"
+        DisableImageActionButtons()
+
+        if os.path.isfile(sd.GetImage()):
+            picture.image = sd.GetImage()
+            EnableImageActionButtons()
 
     if (Diffusion.GetProcessingResult() == True):
         StatusMSG.value = "Finished!"
         EnableVisuals()
+        Stop_Button.enabled = False
 
         if os.path.isfile(sd.GetImage()):
-            picture.image = sd.GetImage()    
+            picture.image = sd.GetImage()
+            EnableImageActionButtons()
+
+DisableImageActionButtons()
 
 
-mygui.GetMainWindow().repeat(1000, GetThreadStatus)
+    
+Stop_Button.enabled = False
+
+app.repeat(1000, GetThreadStatus)
 
 
 #showing the gui

@@ -5,19 +5,28 @@ import threading
 import time
 from subprocess import Popen, PIPE
 import SD
+import Settings
+
+#------------------------------------------------------------
+# Diffusion Class for handling Stable Diffusion processing thread and data
+#------------------------------------------------------------
 
 class Diffusion:
     def __init__(self):
         self.is_running = False
         self.thread_done = False
         self.thread = threading.Thread()
-        self.sd = ""
+        self.sd_exe = ""
         self.args = ""
         self.pid = -1
         self.cwd = os.getcwd()
+        self.sd = SD.SD()
+        self.settings = Settings.Settings()
+
+        self.settings.Load()
+        self.sd.Load()
 
     def GetStatus(self):
-        #return self.thread.is_alive()
         return self.is_running
 
     def GetProcessingResult(self):
@@ -29,8 +38,9 @@ class Diffusion:
         
         self.is_running = True
         self.thread_done = False
+
+        os.chdir(self.GetWorkingDirectory())
         
-        os.chdir(self.dir)        
         self.proc = os.popen(self.command).read()
         
         #changing back dir
@@ -45,27 +55,38 @@ class Diffusion:
             self.thread_done = False
             self.is_running = False
             
-            os.popen("Taskkill /PID %d /F" % int(self.GetProcessID())).read()
+            if os.name == 'nt':
+                os.popen("Taskkill /PID %d /F" % int(self.GetProcessID())).read()
+            else:
+                os.popen(("kill " + self.GetProcessID())).read()
 
             if self.thread.is_alive() == True:
-                print("Thread is still alive :(")
+                print("Thread is still alive!")
 
     def GetStableDiffusion(self):
+        self.sd.Load()
+        
+        if (self.sd.GetXL()):
+            return self.settings.GetSDXLFile()
+        else:
+            return self.settings.GetSDFile()
+        
         #returns the stable diffusion path as OS requirements
         #later on it will be replaced with configuration editor.
-        if os.name == 'nt':
-            return "D:\\SD\\sd.exe"
-        else:
-            #use shell execute
-            return "./sd"
+##        if os.name == 'nt':
+##            return "D:\\SD\\sd.exe"
+##        else:
+##            #use shell execute
+##            return "./sd"
 
     def GetProcessID(self):
         if os.name == 'nt':
             return self.WindowsGetProcessID()
         else:
-            #use shell execute
-            #some other commands for getting the right data...
-            return "./sd"
+            return self.LinuxGetProcessID()
+        
+    def LinuxGetProcessID(self):
+        return os.popen("pid sd")
 
     def WindowsGetProcessID(self):
         proc_path = self.GetStableDiffusion()
@@ -82,32 +103,34 @@ class Diffusion:
         return "-1"
 
     def GetWorkingDirectory(self):
-        return "D:\\SD\\"
+        if (self.sd.GetXL()):
+            return self.settings.GetSDXLDir()
+        else:
+            return self.settings.GetSDDir()
         
     def Diffuse(self):
+        self.settings.Load()
+        
         if (self.is_running == True):
-            return False
-
-        sd = SD.SD()
+            return False        
         
-        if not sd.Load():
+        if not self.sd.Load():
             return False
         
-        self.sd = self.GetStableDiffusion()
+        self.sd_exe = self.GetStableDiffusion()
         self.args = ""
         
-        if (sd.GetXL()):
+        if (self.sd.GetXL()):
             self.args += " --xl "
 
-        self.args += " --prompt \"" + sd.GetPosPrompt() + "\" "
-        self.args += " --neg-prompt \"" + sd.GetNegPrompt() + "\" "
-        self.args += " --output \"" + sd.GetImage() + "\" "
-        self.args += " --steps \"" + sd.GetSteps() + "\" "
-        #"--xl --prompt \"" + sd.GetPosPrompt() + "\" --neg-prompt \"blurry\" --output \"testfile.png\" --steps 3 "
+        self.args += " --prompt \"" + self.sd.GetPosPrompt() + "\" "
+        self.args += " --neg-prompt \"" + self.sd.GetNegPrompt() + "\" "
+        self.args += " --output \"" + self.sd.GetImage() + "\" "
+        self.args += " --steps \"" + self.sd.GetSteps() + "\" "
 
-        self.command = self.sd + " " + self.args
+        self.command = self.sd_exe + " " + self.args
         self.dir = self.GetWorkingDirectory()
-
+    
         self.thread = threading.Thread(target=self.DiffuseThread)
         self.thread.start()
 
