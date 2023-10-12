@@ -8,6 +8,7 @@ class Project{
 	public $steps;
 	public $seed;
 	public $picture;
+	public $sdxl;
 	
 	function load(){
 		$data = explode("
@@ -20,6 +21,7 @@ class Project{
 			$this->steps = $data[3].trim();
 			$this->seed = $data[4].trim();
 			$this->picture = $data[5].trim();
+			$this->sdxl = intval($data[6].trim());
 		}
 		else{
 			$this->name = "";
@@ -28,10 +30,11 @@ class Project{
 			$this->steps = "";
 			$this->seed = "";
 			$this->picture = "";
+			$this->sdxl = 0;
 		}
 	}
 	
-	function save($name, $posprompt, $negprompt, $steps, $seed, $force_new_image = false){
+	function save($name, $posprompt, $negprompt, $steps, $seed, $force_new_image = false, $sdxl = false){
 		//keep the existing or creat if none...
 		if ($force_new_image){
 			$this->picture = "";
@@ -66,7 +69,8 @@ class Project{
 " . $this->negprompt . "
 " . $this->steps . "
 " . $this->seed . "
-" . $this->picture);
+" . $this->picture . "
+" . intval($this->sdxl));
 
 		return true;
 	}

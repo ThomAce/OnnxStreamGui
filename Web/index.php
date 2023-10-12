@@ -282,7 +282,7 @@ box-shadow: rgba(255,255,255, 0.75) 1.5em 0 0 0, rgba(255,255,255, 0.75) 1.1em 1
                     </div>				
 					
 					<div class="form-check form-switch ps-0">
-                      <input class="form-check-input ms-auto" type="checkbox" id="flexSwitchCheckDefault" checked>
+                      <input class="form-check-input ms-auto" type="checkbox" name="sdxl" id="flexSwitchCheckDefault" <?php if ($proj->sdxl == 1){ print "checked"; } ?>>
                       <label class="form-check-label text-body ms-3 text-truncate w-80 mb-0" for="flexSwitchCheckDefault">Use Stable Diffusion XL1.0</label>
                     </div>
 					
@@ -291,13 +291,8 @@ box-shadow: rgba(255,255,255, 0.75) 1.5em 0 0 0, rgba(255,255,255, 0.75) 1.1em 1
                       <input name="steps" type="text" class="form-control" placeholder="10" aria-label="Password" aria-describedby="password-addon" style="width: 60px;" value="<?php if ($proj->steps != "") { print $proj->steps; } else { print "10"; } ?>" onChange="CheckNumber(this);">
                     </div>
 					
-                    <!--<p class="mb-5">From colors, cards, typography to complex elements, you will find the full documentation.</p>
-                    <a class="text-body text-sm font-weight-bold mb-0 icon-move-right mt-auto" href="javascript:;">
-                      Read More
-                      <i class="fas fa-arrow-right text-sm ms-1" aria-hidden="true"></i>
-                    </a>//-->
 					
-					<div class="text-center">
+		    <div class="text-center">
                       <button type="submit" id="startbtn" class="btn bg-gradient-info w-100 mt-4 mb-0" onClick="javascript:startProcessing()" disabled>Start</button>					  
                     </div>
 					
@@ -386,13 +381,6 @@ box-shadow: rgba(255,255,255, 0.75) 1.5em 0 0 0, rgba(255,255,255, 0.75) 1.1em 1
   <div id="callback" style="visibility: hidden; height: 1px;"></div>
   <div id="target" style="visibility: hidden; height: 1px;"></div>
   <script>
-    /*var win = navigator.platform.indexOf('Win') > -1;
-    if (win && document.querySelector('#sidenav-scrollbar')) {
-      var options = {
-        damping: '0.5'
-      }
-      Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
-    }*/
 	
 	document.getElementById('loadinglayer').style.visibility = "visible";
 	

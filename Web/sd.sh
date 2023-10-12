@@ -8,17 +8,13 @@ else
 	echo "neg-prompt: $3";
 	echo "steps: $4";
 
-	echo "./sd6 --xl --output \"/var/www/html/sd/$1\" --prompt \"$2\" --neg-prompt \"$3\" --steps $4 --rpi" > "/var/www/html/sd/command.txt"
+	echo "$5 ./sd --xl --output \"/var/www/html/sd/$1\" --prompt \"$2\" --neg-prompt \"$3\" --steps $4 --rpi" > "/var/www/html/sd/command.txt"
 
 	cd /
 
-	cd media
-	cd thomace
-	cd EXT
-	cd stable-diffusion-xl-base-1.0-onnxstream
+	cd $5
 
-
-	./sd6 --xl --output "/var/www/html/sd/$1" --prompt "$2" --neg-prompt "$3" --steps $4 --rpi
+	./sd $6 --output "/var/www/html/sd/$1" --prompt "$2" --neg-prompt "$3" --steps $4 --rpi
 
 	rm "/var/www/html/sd/.lock";
 	echo "Done"

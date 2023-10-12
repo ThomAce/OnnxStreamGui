@@ -1,12 +1,13 @@
 <?php
 
 include "project.php";
+include "config.php";
 
 $proj = new Project();
 
 $proj->load();
 	
-if (! $proj->save($_POST['project'], $_POST['pos-prompt'], $_POST['neg-prompt'], $_POST['steps'], time())){
+if (! $proj->save($_POST['project'], $_POST['pos-prompt'], $_POST['neg-prompt'], $_POST['steps'], time(), false, $_POST['sdxl'])){
 	print "nothing to process";
 	die;		
 }
@@ -21,7 +22,7 @@ if ($_POST['action'] == "SAVE PROJECT"){
 }
 
 if ($_POST['action'] == "REFINE PROJECT"){
-	if (! $proj->save($_POST['project'], $_POST['pos-prompt'], $_POST['neg-prompt'], $_POST['steps'], time(), true)){
+	if (! $proj->save($_POST['project'], $_POST['pos-prompt'], $_POST['neg-prompt'], $_POST['steps'], time(), true, $_POST['sdxl'])){
 		print "nothing to process";
 		die;		
 	}	
@@ -30,7 +31,7 @@ if ($_POST['action'] == "REFINE PROJECT"){
 if ($_POST['action'] == "REFINE PROJECT DROP IMAGE"){
 	delete($proj->picture);
 	
-	if (! $proj->save($_POST['project'], $_POST['pos-prompt'], $_POST['neg-prompt'], $_POST['steps'], time(), true)){
+	if (! $proj->save($_POST['project'], $_POST['pos-prompt'], $_POST['neg-prompt'], $_POST['steps'], time(), true, $_POST['sdxl'])){
 		print "nothing to process";
 		die;		
 	}	
@@ -54,8 +55,6 @@ if (substr_count($_POST['action'], "DELETE:") > 0){
 ?>
 
 
-
-
 <!DOCTYPE html>
 
 <?php
@@ -65,28 +64,17 @@ if (! $_POST['pos-prompt']){
 	die;
 }
 
-/*
-$targetfile = md5(time());
-$targetfile .= ".png";
 
+$sd_path = $sd;
+$additional_parameter = ""; //none
 
-$_POST['pos-prompt'] = str_replace(array("
-", "\r", "\n"), ", ", trim($_POST['pos-prompt']));
-
-$_POST['neg-prompt'] = str_replace(array("
-", "\r", "\n"), ", ", trim($_POST['neg-prompt']));
-
-file_put_contents("project.txt", $_POST['project'] . "
-" . $_POST['pos-prompt'] . "
-" . $_POST['neg-prompt'] . "
-" . $_POST['steps'] . "
-" . $targetfile);
-
-*/
-
+if ($proj->sdxl > 0){
+	$sd_path = $sdxl;
+	$additional_parameter = "--xl";
+}
 
 //only on linux... windows coming soon
-exec(sprintf('%s > /dev/null 2>&1 &', '/var/www/html/sd/sd.sh "' . $proj->picture . '" "' . $proj->posprompt . '" "' . $proj->negprompt . '" ' . $proj->steps . ''));
+exec(sprintf('%s > /dev/null 2>&1 &', $sd_shellscript . ' "' . $proj->picture . '" "' . $proj->posprompt . '" "' . $proj->negprompt . '" ' . $proj->steps . ' "' . $sd_path . '" ' . $additional_parameter));
 
 
 ?>
