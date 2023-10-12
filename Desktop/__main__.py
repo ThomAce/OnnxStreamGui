@@ -372,7 +372,7 @@ def start_diffusing():
         save_project_data()
 
     if os.path.isfile(sd.GetImage()):
-        if (not yesno("WARNING!", "The target image will be overwritten.\r\nAre you sure?")):
+        if (not app.yesno("WARNING!", "The target image will be overwritten.\r\nAre you sure?")):
             return
         
     Diffusion.Diffuse()
