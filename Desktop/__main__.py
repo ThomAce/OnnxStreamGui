@@ -110,7 +110,7 @@ PushButton(HeaderControls_inner, grid=[4,0],text="OnnxStream on Github", align="
 
 
 #------------------------------------------------------------
-#outer box for holding visual elements in perfect shape and dimmensions
+#outer box for holding visual elements in perfect shape and dimensions
 #------------------------------------------------------------
 outerbox = Box(rootbox, layout="grid", grid=[0,1], width="fill", height="fill", align="left", border=0)
 outerbox.bg="#FFFFFF"
@@ -370,6 +370,10 @@ Box(ProjectInputBox, grid=[0,12],layout="grid",align="left", width=320, height=1
 def start_diffusing():
     if (not Diffusion.GetStatus()):
         save_project_data()
+
+    if os.path.isfile(sd.GetImage()):
+        if (not yesno("WARNING!", "The target image will be overwritten.\r\nAre you sure?")):
+            return
         
     Diffusion.Diffuse()
 
@@ -537,7 +541,7 @@ def GetThreadStatus():
         DisableImageActionButtons()
 
         if os.path.isfile(sd.GetImage()):
-            picture.image = sd.GetImage()
+            picture.image = sd.GetImageThumb()#sd.GetImage()
             EnableImageActionButtons()
 
     if (Diffusion.GetProcessingResult() == True):
