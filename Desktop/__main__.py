@@ -550,7 +550,7 @@ def GetThreadStatus():
         Stop_Button.enabled = False
 
         if os.path.isfile(sd.GetImage()):
-            picture.image = sd.GetImage()
+            picture.image = sd.GetImageThumb()#sd.GetImage()
             EnableImageActionButtons()
 
 DisableImageActionButtons()
