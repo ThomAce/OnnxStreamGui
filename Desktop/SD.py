@@ -1,4 +1,5 @@
 import os
+from PIL import Image
 
 #------------------------------------------------------------
 # SD Class for handling Stable Diffusion project data
@@ -45,6 +46,12 @@ class SD:
 
     def GetImage(self):
         return self.image
+
+    def GetImageThumb(self):
+        image = Image.open(self.image)
+        new_image = image.resize((320, 320))
+        new_image.save(self.cwd + '/thumb.png')
+        return (self.cwd + '/thumb.png')
 
     def GetSteps(self):
         if (self.steps == ""):
