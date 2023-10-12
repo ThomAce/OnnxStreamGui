@@ -26,8 +26,39 @@ WARNING! - The web based version only tested on RaspberryPi 4!
 
 # Desktop GUI Requirements:
 - Python3+
+  - Go to https://www.python.org/downloads/
+  - Select, download and install Python according to your OS
 - Guizero
-- Guizero images (https://lawsie.github.io/guizero/#installation)
+  - Go to https://lawsie.github.io/guizero/#installation for details or:
+  - Run the command in cmd: pip install guizero
+- Guizero images
+  - Run the command in cmd: pip3 install guizero[images]
+- PIL (aka Pillow)
+  - Run the command in cmd: pip install pillow
+
+You are ready to start the application based on your system preferences. You can choose either sdgui.sh or sdgui.bat according to your OS type.
+
+# How to use:
+
+## First time use:
+  
+  - At the first start you should navigate to Settings by pressing the appropriate button on top of the application window.
+  - Provide at least one of the Stable Diffusion executable path (including the executable!).
+  - Save it and your application is ready to be used.
+
+## Generate image:
+
+- Provide a name of the project. It can be theoretically anything.
+- Provide Positive Prompt.
+- Provide Negative Prompt.
+- Provide Image name. You can do it with the little save icon right side of the input field below the Image name field or copy&paste the direct path to the target image.
+- Provide steps between 3 and 100
+- Choose which type of diffusion you wanted to use
+- Push the start button and wait.
+
+When the diffusion ready the generated image will be visible and the status changed to "finished", the Actions buttons become available.
+
+  
 
 
 # Pre-Alpha photos (developer insight if you like...):
