@@ -22,7 +22,7 @@ class Diffusion:
         self.pid = -1
         self.cwd = os.getcwd()
         self.sd = SD.SD()
-        self.settings = Settings.Settings()
+        self.settings = Settings.Settings()        
 
         self.settings.Load()
         self.sd.Load()
@@ -139,10 +139,14 @@ class Diffusion:
         if (self.sd.GetXL()):
             self.args += " --xl "
 
+        if (self.settings.GetRam()):
+            self.args += " --ram "
+
         self.args += " --prompt \"" + self.sd.GetPosPrompt() + "\" "
         self.args += " --neg-prompt \"" + self.sd.GetNegPrompt() + "\" "
         self.args += " --output \"" + self.sd.GetImage() + "\" "
-        self.args += " --steps \"" + self.sd.GetSteps() + "\" "
+        self.args += " --steps " + self.sd.GetSteps() + " "
+        self.args += " --seed " + str(self.sd.GetSeed()) + " "
         self.args += self.is_raspberrypi()
 
         self.command = self.sd_exe + " " + self.args
