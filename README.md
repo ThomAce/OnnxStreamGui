@@ -9,7 +9,7 @@ OnnxStream is an efficient project designed for stable diffusion with minimal me
 # OnnxStream Github repo:
 [https://github.com/vitoplantamura/OnnxStream](https://github.com/vitoplantamura/OnnxStream)
 
-# Customized version with logging:
+# OnnxStream+ Github repo: (fork of OnnxStream with capability of custom seed, fine tuning & re-generating your image, and logging.)
 https://github.com/ThomAce/OnnxStream
 
 # Current stage:
@@ -18,6 +18,15 @@ PRE-ALPHA
 # Available packages:
 - Webpage
 - Desktop GUI
+
+# Pre requisites:
+
+- SD1.5 weights: https://github.com/vitoplantamura/OnnxStream/releases/tag/v0.1
+- SDXL1.0 weights:
+```
+git lfs install
+git clone --depth=1 https://huggingface.co/vitoplantamura/stable-diffusion-xl-base-1.0-onnxstream
+```
 
 # Web Requirements:
 WARNING! - The web based version only tested on RaspberryPi 4!
