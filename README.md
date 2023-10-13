@@ -1,7 +1,7 @@
 ![kép](https://github.com/ThomAce/OnnxStreamGui/assets/34764511/c59dee8a-cfa5-4928-afd2-b0c343e7f1f5)
 
 # OnnxStreamGui
-An Efficient Graphical User Interface (GUI) for OnnxStream: Designed with simplicity and user-friendliness in mind, this interface ensures smooth and intuitive navigation. Tailored to cater to a wide range of computing platforms, it is especially optimized for performance on devices like the Raspberry Pi. The purpose behind this design is to harness the minimal memory consumption capabilities of OnnxStream, making it accessible and effective for users across different hardware and software environments.
+An Efficient Graphical User Interface (GUI) for OnnxStream and OnnxStream+: Designed with simplicity and user-friendliness in mind, this interface ensures smooth and intuitive navigation. Tailored to cater to a wide range of computing platforms, it is especially optimized for performance on devices like the Raspberry Pi. The purpose behind this design is to harness the minimal memory consumption capabilities of OnnxStream, making it accessible and effective for users across different hardware and software environments.
 
 # What is OnnxStream?
 OnnxStream is an efficient project designed for stable diffusion with minimal memory consumption. It performs exceptionally well on a variety of computers, but is especially optimized for the Raspberry Pi.
