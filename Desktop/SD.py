@@ -79,7 +79,7 @@ class SD:
         return self.status
 
     def GetSeed(self):
-        if (self.seed < 1):
+        if (int(self.seed) < 1):
             self.seed = self.get_random_number()
             
         return self.seed
