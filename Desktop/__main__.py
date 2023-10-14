@@ -627,7 +627,7 @@ def save_project_data():
     sd.SetImage(TargetImage.value)
     sd.SetSteps(Steps_TextBox.value)
     sd.SetXL(UseXL_CheckBox.value)
-    sd.SetSeed(Seed_TextBox.value)
+    sd.SetSeed(SeedBox_TextBox.value)
     sd.Save()
 #------------------------------------------------------------
 
@@ -640,7 +640,7 @@ def load_project_data():
     NegativePrompt.value = sd.GetNegPrompt()
     TargetImage.value = sd.GetImage()
     Steps_TextBox.value = sd.GetSteps()
-    Seed_TextBox.value = sd.GetSeed()
+    SeedBox_TextBox.value = sd.GetSeed()
     UseXL_CheckBox.value = sd.GetXL()
 #------------------------------------------------------------
 
@@ -653,7 +653,7 @@ def reset_project_data():
     NegativePrompt.value = ""
     TargetImage.value = ""
     Steps_TextBox.value = ""
-    Seed_TextBox.value = sd.GetSeed(-1)
+    SeedBox_TextBox.value = sd.GetSeed(-1)
     UseXL_CheckBox.value = False
 #------------------------------------------------------------
 
