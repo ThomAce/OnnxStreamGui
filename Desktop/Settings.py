@@ -64,7 +64,7 @@ class Settings:
     \"SD\": \"""" + self.GetSDFile().strip() + """\",
     \"SDXL\": \"""" + self.GetSDXLFile().strip() + """\",
     \"RAM\": \"""" + str(self.GetRam()).strip() + """\"
-    }""")
+}""")
             f.close()
             return True
         except:
@@ -112,15 +112,13 @@ class Settings:
         PushButton(SDXLPath, grid=[1,0], text="Open",padx=6, pady=1, command=select_xl).font="Arial"
         Box(app, grid=[2,2], width=20, height=20) #spacer right
 
-
         Box(app, grid=[0,3], width=10, height=20) #spacer left
 
         Ram_CheckBox = CheckBox(app, grid=[1,3],align="left", text="Use Ram instead of disk cache")
         Ram_CheckBox.font = "Arial"
         Box(app, grid=[2,3], width=20, height=20) #spacer right
 
-        if (self.GetRam()):
-            Ram_CheckBox.toggle()
+        Ram_CheckBox.value = self.GetRam()
 
         def save():
             self.SetSDFile(SD_Path.value)
