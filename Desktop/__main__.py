@@ -339,25 +339,25 @@ Text(ProjectInputBox, grid=[0,8], text="Steps and Seed", align="left", size=9, f
 def steps_text_changed(textbox_value):
     global Steps
     
-    if getTextBoxValue().isnumeric() == False:
-        if (getTextBoxValue()[:-1].isnumeric() == True):
-            getTextBoxObj().value = getTextBoxValue()[:-1]
+    if getTextBoxValue(getStepsBox()).isnumeric() == False:
+        if (getTextBoxValue(getStepsBox())[:-1].isnumeric() == True):
+            getStepsBox().value = getTextBoxValue(getStepsBox())[:-1]
         else:
             Steps = 3
-            getTextBoxObj().value = "3"
+            getStepsBox().value = "3"
             return
 
-    if (int(getTextBoxValue()) > 100):
+    if (int(getTextBoxValue(getStepsBox())) > 100):
         Steps = 100
-        getTextBoxObj().value = "100"
+        getStepsBox().value = "100"
         return
 
-    if (int(getTextBoxValue()) < 3):
+    if (int(getTextBoxValue(getStepsBox())) < 3):
         Steps = 3
-        getTextBoxObj().value = "3"
+        getStepsBox().value = "3"
         return
 
-    Steps = int(getTextBoxValue(getTextBoxObj()))
+    Steps = int(getTextBoxValue(getStepsBox()))
 #------------------------------------------------------------
     
 #------------------------------------------------------------
@@ -400,8 +400,8 @@ Steps_TextBox.font = "Arial"
 #------------------------------------------------------------
 # getting textobx object for steps
 #------------------------------------------------------------
-def getTextBoxObj():
-    return Steps_TextBox
+#def getTextBoxObj():
+#    return Steps_TextBox
 #------------------------------------------------------------
 
 #------------------------------------------------------------
@@ -454,6 +454,13 @@ SeedBox_PushButton = PushButton(SeedBox, grid=[5,0],text=" ", padx=6, pady=0, wi
 #------------------------------------------------------------
 def getSeedBox():
     return SeedBox_TextBox
+#------------------------------------------------------------
+
+#------------------------------------------------------------
+# return steps textbox widget object
+#------------------------------------------------------------
+def getStepsBox():
+    return Steps_TextBox#SpinBox_text
 #------------------------------------------------------------
 
 #------------------------------------------------------------
