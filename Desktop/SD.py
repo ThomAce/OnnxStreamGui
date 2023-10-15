@@ -78,10 +78,12 @@ class SD:
     def GetStatus(self):
         return self.status
 
-    def GetSeed(self):
-        if (int(self.seed) < 1):
-            self.seed = self.get_random_number()
-            
+    def GetSeed(self, seed = 0):
+        if (int(seed) < 0):
+            self.SetSeed(-1)
+        else:
+            self.SetSeed(int(seed))
+
         return self.seed
 
     def Reset(self):
