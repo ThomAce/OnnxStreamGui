@@ -52,20 +52,23 @@ class Diffusion:
 
 
     def Stop(self):        
-        if (self.is_running == True): 
-            self.thread_done = False
-            self.is_running = False
+        if (self.is_running == True):
+            pid = int(self.GetProcessID())
+
+            #debug:
+            #print("processid: %d" % pid)
+
+            if (pid < 1):
+                print("Process could not be found!")
+                return
             
             if os.name == 'nt':
-                os.popen("Taskkill /PID %d /F" % int(self.GetProcessID())).read()
+                os.popen("Taskkill /PID %d /F" % pid).read()
             else:
-                pid = self.GetProcessID()
+                os.popen("kill %d" % pid).read()
 
-                if (int(pid) > 1):
-                    os.popen("kill " + pid).read()
-
-##            if self.thread.is_alive() == True:
-##                print("Thread is still alive!")
+            self.thread_done = False
+            self.is_running = False
 
     def GetStableDiffusion(self):
         self.sd.Load()
@@ -74,14 +77,6 @@ class Diffusion:
             return self.settings.GetSDXLFile()
         else:
             return self.settings.GetSDFile()
-        
-        #returns the stable diffusion path as OS requirements
-        #later on it will be replaced with configuration editor.
-##        if os.name == 'nt':
-##            return "D:\\SD\\sd.exe"
-##        else:
-##            #use shell execute
-##            return "./sd"
 
     def GetProcessID(self):
         if os.name == 'nt':
@@ -94,19 +89,17 @@ class Diffusion:
         return os.popen("pidof " + executable).read().strip()
 
     def WindowsGetProcessID(self):
-        proc_path = self.GetStableDiffusion()
+        #fix path issues
+        proc_path = self.GetStableDiffusion().replace("/", "\\")
+
+        pid = os.popen("wmic process get ProcessID,ExecutablePath | findstr /c:\"" + proc_path + "\"").read().strip()
+        pid = str(pid.replace(pid.split("   ")[0].strip(), "").strip())
         
-        Processes = str(subprocess.check_output(['wmic', 'process', 'list', 'full'])).split("\\r\\r\\n")
-
-        i = 0
-        for p in Processes:
-            if (p.replace("\\\\", "\\").strip().endswith("=" + proc_path)):
-                return Processes[i+2].split("=")[1].strip()
-
-            i += 1
+        if pid == "":
+            return "-1"
         
-        return "-1"
-
+        return pid
+        
     def GetWorkingDirectory(self):
         if (self.sd.GetXL()):
             return self.settings.GetSDXLDir()
