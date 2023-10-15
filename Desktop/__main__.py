@@ -58,7 +58,7 @@ def processing_time():
     if (stop_time > -1):
         runtime = int(stop_time)
     else:
-        runtime = (time.time() - start_time)
+        runtime = int(time.time() - start_time)
     
     if (runtime < 60):
         return str(runtime) + " sec"
@@ -737,13 +737,13 @@ def get_proc_msg():
 
     if proc_steps > 3:
         proc_steps = 0
-        return "Processing"
+        return "Processing    " + processing_time()
     elif proc_steps == 3:
-        return "Processing..."
+        return "Processing... " + processing_time()
     elif proc_steps == 2:
-        return "Processing.."
+        return "Processing..  " + processing_time()
     elif proc_steps == 1:
-        return "Processing."
+        return "Processing.   " + processing_time()
 
     return "Processing"
 #------------------------------------------------------------
