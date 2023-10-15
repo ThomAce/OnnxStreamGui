@@ -302,13 +302,16 @@ Box(TargetImage_Box, grid=[1,0],layout="grid",align="left", width=10, height=10,
 def open_target_image():
     save_path = app.select_file(title="Save generated image file", folder=".", filetypes=[["All files", "*.png"]], save=True, filename="")
 
+    if (save_path[-4:].lower() != ".png"):
+            save_path += ".png"
+    
     if os.path.isfile(save_path):
         if (not app.yesno("WARNING!", "The file already exists!\r\nDo you wish to overwrite?")):
-            return
+            return    
 
     TargetImage.value = save_path
 #------------------------------------------------------------
-    
+
 OpenTargetImage_PushButton = PushButton(TargetImage_Box, command=open_target_image, grid=[2,0], width=18, height=18, align="right", image=WorkingDirectory + "/images/save_icon.png")
 #------------------------------------------------------------
 
@@ -572,6 +575,9 @@ def save_image():
     selected_file = app.select_file(title="Save to file", folder=".", filetypes=[["All files", "*.png"]], save=True, filename="")
 
     if (selected_file != ""):
+        if (selected_file[-4:].lower() != ".png"):
+            selected_file += ".png"
+            
         shutil.move(sd.GetImage(), selected_file)
         EnableVisuals()
         app.info("Info", "Done!")
@@ -580,17 +586,17 @@ def save_image():
 #------------------------------------------------------------
 # Refine image function. Basically the same as Start button.
 #------------------------------------------------------------
-def refine_image():
-    if (not app.yesno("WARNING!", "The actual file will be overwritten.\r\nAre you sure?")):
-        return
-
-    #saving project
-    save_project_data()
-    
-    start_measure_processing()
-    #starting the diffusion
-    start_diffusing()
-    return
+##def refine_image():
+##    if (not app.yesno("WARNING!", "The actual file will be overwritten.\r\nAre you sure?")):
+##        return
+##
+##    #saving project
+##    save_project_data()
+##    
+##    start_measure_processing()
+##    #starting the diffusion
+##    start_diffusing()
+##    return
 #------------------------------------------------------------
 
 #------------------------------------------------------------
@@ -612,15 +618,15 @@ def delete_image():
 #------------------------------------------------------------
 # Action buttons for save, refine, delete image.
 #------------------------------------------------------------
-Text(ImageActionBox, grid=[0,0], text="Actions ", align="left", size=9, font="Arial Black")
+Text(ImageActionBox, grid=[0,0], text="Actions:", align="left", size=9, font="Arial Black")
 Box(ImageActionBox, layout="auto", grid=[1,0], border=0, align="left", width=20, height=20)
-Save_Image_PushButton = PushButton(ImageActionBox, grid=[2,0],text="Save", padx=6, pady=2, command=save_image)
+Save_Image_PushButton = PushButton(ImageActionBox, grid=[2,0],text="Save Image", padx=6, pady=2, command=save_image)
 Save_Image_PushButton.font = "Arial"
+#Box(ImageActionBox, layout="auto", grid=[3,0], border=0, align="left", width=20, height=20)
+#Refine_Image_PushButton = PushButton(ImageActionBox, grid=[4,0],text="Refine", padx=6, pady=2, command=refine_image)
+#Refine_Image_PushButton.font = "Arial"
 Box(ImageActionBox, layout="auto", grid=[3,0], border=0, align="left", width=20, height=20)
-Refine_Image_PushButton = PushButton(ImageActionBox, grid=[4,0],text="Refine", padx=6, pady=2, command=refine_image)
-Refine_Image_PushButton.font = "Arial"
-Box(ImageActionBox, layout="auto", grid=[5,0], border=0, align="left", width=20, height=20)
-Delete_Image_PushButton = PushButton(ImageActionBox, grid=[6,0],text="Delete", padx=6, pady=2, command=delete_image)
+Delete_Image_PushButton = PushButton(ImageActionBox, grid=[6,0],text="Delete Image", padx=6, pady=2, command=delete_image)
 Delete_Image_PushButton.font = "Arial"
 #------------------------------------------------------------
 
@@ -659,7 +665,7 @@ def reset_project_data():
     PositivePrompt.value = ""
     NegativePrompt.value = ""
     TargetImage.value = ""
-    Steps_TextBox.value = ""
+    Steps_TextBox.value = "10"
     SeedBox_TextBox.value = sd.GetSeed(-1)
     UseXL_CheckBox.value = False
 #------------------------------------------------------------
@@ -690,7 +696,7 @@ def DisableVisuals():
 #------------------------------------------------------------
 def DisableImageActionButtons():
     Save_Image_PushButton.enabled = False
-    Refine_Image_PushButton.enabled = False
+    #Refine_Image_PushButton.enabled = False
     Delete_Image_PushButton.enabled = False
 #------------------------------------------------------------
 
@@ -699,7 +705,7 @@ def DisableImageActionButtons():
 #------------------------------------------------------------
 def EnableImageActionButtons():
     Save_Image_PushButton.enabled = True
-    Refine_Image_PushButton.enabled = True
+    #Refine_Image_PushButton.enabled = True
     Delete_Image_PushButton.enabled = True
 #------------------------------------------------------------
 
@@ -785,6 +791,16 @@ Stop_Button.enabled = False
 
 app.repeat(1000, GetThreadStatus)
 
+
+def bring_to_front():
+    global app
+    app.tk.attributes("-topmost", True)
+    app.tk.lift()
+    app.tk.attributes("-topmost", False)
+
+bring_to_front()
+
+app.after(1000, bring_to_front)
 
 #showing the gui
 mygui.Show()
