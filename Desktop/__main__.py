@@ -513,6 +513,7 @@ def start_diffusing():
 
     start_measure_processing()
 
+    sd.ResetThumb()
     Diffusion.Diffuse()
 #------------------------------------------------------------
 
