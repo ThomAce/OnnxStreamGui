@@ -21,6 +21,7 @@ class SD:
         self.project_file = "Project.txt" #default project file
         self.cwd = os.getcwd()
         self.status = False
+        self.thumb_created = False
 
     def SetName(self, name):
         self.name = name
@@ -46,6 +47,9 @@ class SD:
             
         self.seed = seed
 
+    def ResetThumb(self):
+        self.thumb_created = False
+
 
     def GetName(self):
         return self.name
@@ -60,9 +64,14 @@ class SD:
         return self.image
 
     def GetImageThumb(self):
-        image = Image.open(self.image)
-        new_image = image.resize((320, 320))
-        new_image.save(self.cwd + '/thumb.png')
+        if self.image == "":
+            return ""
+        
+        if not self.thumb_created:
+            image = Image.open(self.image)
+            new_image = image.resize((320, 320))
+            new_image.save(self.cwd + '/thumb.png')
+            self.thumb_created = True
         
         return (self.cwd + '/thumb.png')
 
@@ -81,6 +90,8 @@ class SD:
     def GetSeed(self, seed = 0):
         if (int(seed) < 0):
             self.SetSeed(-1)
+        elif (int(seed) == 0):
+           return self.seed
         else:
             self.SetSeed(int(seed))
 
@@ -94,6 +105,7 @@ class SD:
         self.SetSteps("")
         self.SetXL(False)
         self.status = False
+        self.thumb_created = False
 
     def LoadProjectFile(self, project_file):
         if (len(project_file.strip()) < 3):
