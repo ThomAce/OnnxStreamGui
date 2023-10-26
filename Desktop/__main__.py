@@ -19,7 +19,10 @@ import shutil
 import Settings
 import webbrowser
 import time
+import progress_bar
 
+
+VERSION = "1.0.0.0"
 
 
 start_time = time.time()
@@ -135,6 +138,16 @@ HeaderText = Text(HeaderText_box_inner, text="OnnxStream GUI", grid=[0,0], align
 HeaderText.font = "Arial Black"
 HeaderText.text_color = "#000000"
 HeaderText.size = 16
+
+#spacer right
+Box(HeaderText_box_inner, layout="grid", grid=[1,0], width=46, height=35, align="left", border=0)
+
+#version number
+HeaderText = Text(HeaderText_box_inner, text=VERSION, grid=[2,0], align="right")
+HeaderText.font = "Arial"
+HeaderText.text_color = "#000000"
+HeaderText.size = 9
+
 #------------------------------------------------------------
 
 #------------------------------------------------------------
@@ -552,7 +565,12 @@ imageBox = Box(innerbox, layout="grid", grid=[2,0], width=320, height=400, align
 picture = Picture(imageBox, image=WorkingDirectory + "/images/main.png", grid=[0,0], width=320, height=320)
 
 #vertical spacer
-Box(imageBox, layout="auto", grid=[0,1], width=320, height=10, align="top", border=0)
+pbbox = Box(imageBox, layout="auto", grid=[0,1], width=320, height=10, align="top", border=0)
+pb = progress_bar.ProgressBar(pbbox)
+pb.Width(320)
+pb.Height(5)
+pb.BarColor("#7CB5FF")
+pb.Show()
 
 StatusBox = Box(imageBox, layout="grid", grid=[0,2], border=0, align="left")
 Text(StatusBox, grid=[0,0], text="Status:", align="left", size=9, font="Arial Black")
@@ -760,14 +778,23 @@ def get_proc_msg():
 # it will control the visual elements accordingly.
 #------------------------------------------------------------
 def GetThreadStatus():
+    global app
+    
     if (Diffusion.GetStatus() == True):
-        StatusMSG.value = get_proc_msg()#"Processing..."
+        StatusMSG.value = get_proc_msg()# + " " + Diffusion.GetProgress()#"Processing..."
+
+        app.title = "OnnxStream GUI - Processing... " + Diffusion.GetProgress()
+
+        pb.Progress(int(Diffusion.GetProgress().replace("%", "").strip()))
+        
         DisableVisuals()
         DisableImageActionButtons()
         Stop_Button.enabled = True
     else:
         StatusMSG.value = "Ready"
+        app.title = "OnnxStream GUI"
         DisableImageActionButtons()
+        pb.Progress(0)
 
         if os.path.isfile(sd.GetImage()):
             picture.image = sd.GetImageThumb()
@@ -775,6 +802,8 @@ def GetThreadStatus():
 
     if (Diffusion.GetProcessingResult() == True):
         StatusMSG.value = "Finished! "
+        app.title = "OnnxStream GUI"
+        pb.Progress(100)
         stop_measure_processing()
         StatusMSG.value += processing_time()
         EnableVisuals()
