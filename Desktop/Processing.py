@@ -49,7 +49,7 @@ class Diffusion:
     #------------------------------------------------------------
     def GetProgress(self):
         if not self.is_running:
-            return ""
+            return "0%"
 
         return self.progress        
     #------------------------------------------------------------
@@ -284,7 +284,3 @@ class Diffusion:
         self.thread = threading.Thread(target=self.DiffuseThread)
         self.thread.start()
     #------------------------------------------------------------
-
-#------------------------------------------------------------
-# end of the script
-#------------------------------------------------------------
