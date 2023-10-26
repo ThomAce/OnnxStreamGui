@@ -2,7 +2,12 @@ from guizero import App, Text, Box, TextBox, PushButton, TitleBox, Picture, Draw
 import tkinter
 import os
 
-class GUI:    
+#------------------------------------------------------------
+# Graphical user interface class
+#------------------------------------------------------------
+
+class GUI:
+    
     def __init__(self):
         self.cwd = os.getcwd()
         self.app_start = "1"
@@ -11,7 +16,11 @@ class GUI:
         self.main = None
         self.width = 0
         self.height = 0
+#------------------------------------------------------------
 
+#------------------------------------------------------------
+# Create main window. Basically the APP itself
+#------------------------------------------------------------
     def CreateWindow(self, title, width, height):
         self.width = width
         self.height = height
@@ -21,6 +30,7 @@ class GUI:
         self.app.tk.resizable(False,False)
         self.app.tk.geometry('%dx%d+%d+%d' % (self.width, self.height, ((self.app.tk.winfo_screenwidth() // 2) - (self.width // 2)), (self.app.tk.winfo_screenheight() // 2) - (self.height // 2)))
         return container
+#------------------------------------------------------------
     
 #------------------------------------------------------------
 #main box for holding controls
@@ -53,15 +63,26 @@ class GUI:
 
         return innerbox
 #------------------------------------------------------------
-    
+
+#------------------------------------------------------------
+# Show created window
+#------------------------------------------------------------
     def Show(self):
         #disable resizing of the window
         self.app.tk.resizable(False,False)
         self.app.tk.geometry('%dx%d+%d+%d' % (self.width, self.height, ((self.app.tk.winfo_screenwidth() // 2) - (self.width // 2)), (self.app.tk.winfo_screenheight() // 2) - (self.height // 2)))
         self.app.visible = True
         self.app.display()
+#------------------------------------------------------------
 
+#------------------------------------------------------------
+# Get main window 
+#------------------------------------------------------------
     def GetMainWindow(self):
         return self.app
+#------------------------------------------------------------
 
-    
+
+#------------------------------------------------------------
+# end of the script
+#------------------------------------------------------------
