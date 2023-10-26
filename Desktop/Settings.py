@@ -49,7 +49,10 @@ class Settings:
             data = eval(open(self.cwd + "/" + self.configfile).read())
             self.SetSDFile(data["SD"])
             self.SetSDXLFile(data["SDXL"])
-            self.SetRam(data["RAM"])
+            self.SetRam(False)
+
+            if data["RAM"] == "1":
+                self.SetRam(True)
             
             return True
         except:
