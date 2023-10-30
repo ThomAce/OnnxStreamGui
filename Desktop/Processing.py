@@ -72,11 +72,7 @@ class Diffusion:
         self.is_running = True
         self.thread_done = False
 
-        os.chdir(self.GetWorkingDirectory())
-
-        #good working one:
-        #obsolete, will be removed. Keeping here for reference
-        #self.proc = os.popen(self.command).read()
+        os.chdir(self.GetWorkingDirectory())        
 
         startupinfo = None
 
@@ -133,27 +129,7 @@ class Diffusion:
             self.proc.terminate()
             self.thread_done = False
             self.is_running = False
-            return
-
-            #old code section below:
-            #soon it will be removed
-            
-            pid = int(self.GetProcessID())
-
-            #debug:
-            #print("processid: %d" % pid)
-
-            if (pid < 1):
-                print("Process could not be found!")
-                return
-            
-            if os.name == 'nt':
-                os.popen("Taskkill /PID %d /F" % pid).read()
-            else:
-                os.popen("kill %d" % pid).read()
-
-            self.thread_done = False
-            self.is_running = False
+            return            
     #------------------------------------------------------------
 
     #------------------------------------------------------------
@@ -166,40 +142,6 @@ class Diffusion:
             return self.settings.GetSDXLFile()
         else:
             return self.settings.GetSDFile()
-    #------------------------------------------------------------
-
-    #------------------------------------------------------------
-    # Getting process id. OBSOLETE! WILL BE REMOVED
-    #------------------------------------------------------------
-    def GetProcessID(self):
-        if os.name == 'nt':
-            return self.WindowsGetProcessID()
-        else:
-            return self.LinuxGetProcessID()
-    #------------------------------------------------------------
-        
-    #------------------------------------------------------------
-    # Getting process id for linux. OBSOLETE! WILL BE REMOVED
-    #------------------------------------------------------------        
-    def LinuxGetProcessID(self):
-        path, executable = os.path.split(self.GetStableDiffusion())
-        return os.popen("pidof " + executable).read().strip()
-    #------------------------------------------------------------
-        
-    #------------------------------------------------------------
-    # Getting process id for windows. OBSOLETE! WILL BE REMOVED
-    #------------------------------------------------------------  
-    def WindowsGetProcessID(self):
-        #fix path issues
-        proc_path = self.GetStableDiffusion().replace("/", "\\")
-
-        pid = os.popen("wmic process get ProcessID,ExecutablePath | findstr /c:\"" + proc_path + "\"").read().strip()
-        pid = str(pid.replace(pid.split("   ")[0].strip(), "").strip())
-        
-        if pid == "":
-            return "-1"
-        
-        return pid
     #------------------------------------------------------------
 
     #------------------------------------------------------------
