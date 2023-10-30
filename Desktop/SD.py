@@ -23,7 +23,7 @@ class SD:
         self.negprompt = ""
         self.image = ""
         self.steps = "3"
-        self.seed = self.get_random_number()#int(time.time())
+        self.seed = self.get_random_number()
         self.xl = False
         self.project_file = "Project.txt" #default project file
         self.cwd = os.getcwd()
