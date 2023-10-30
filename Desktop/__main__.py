@@ -18,63 +18,14 @@ import SD
 import shutil
 import Settings
 import webbrowser
-import time
 import progress_bar
+import MeasureTime
 
 
-VERSION = "1.0.0.0"
+VERSION = "1.0.0.1"
 
+timer = MeasureTime.Timer()
 
-start_time = time.time()
-stop_time = -1
-
-#------------------------------------------------------------
-# start measuring processing time
-#------------------------------------------------------------
-def start_measure_processing():
-    global start_time
-    global stop_time
-
-    start_time = time.time()
-    stop_time = -1
-#------------------------------------------------------------
-    
-#------------------------------------------------------------
-# stop measure processing time
-#------------------------------------------------------------
-def stop_measure_processing():
-    global stop_time
-    
-    if (stop_time > -1):
-        return
-    
-    stop_time = (time.time() - start_time)
-#------------------------------------------------------------
-
-#------------------------------------------------------------
-# calculating processing time... later on it will be moved to a class
-#------------------------------------------------------------
-def processing_time():
-    global start_time
-    global stop_time
-    
-    if (stop_time > -1):
-        runtime = int(stop_time)
-    else:
-        runtime = int(time.time() - start_time)
-    
-    if (runtime < 60):
-        return str(runtime) + " sec"
-    elif (runtime <= 3600):
-        if (str(runtime % 60) == 0):
-           return str(runtime // 60) + " min "
-        
-        return str(runtime // 60) + " min " + str(runtime % 60) + " sec"
-    elif (runtime > 3600):
-        runtime = (runtime // 60)
-        return str(runtime // 60) + " hr " + str(runtime % 60) + " min"
-#------------------------------------------------------------
-    
 sd = SD.SD()
 sd.Load()
 
@@ -514,9 +465,7 @@ Box(ProjectInputBox, grid=[0,12],layout="grid",align="left", width=320, height=1
 #------------------------------------------------------------
 # Start diffusing procedure...
 #------------------------------------------------------------
-def start_diffusing():
-    global start_time
-    
+def start_diffusing():    
     if (not Diffusion.GetStatus()):
         save_project_data()
 
@@ -524,7 +473,7 @@ def start_diffusing():
         if (not app.yesno("WARNING!", "The target image will be overwritten.\r\nAre you sure?")):
             return
 
-    start_measure_processing()
+    timer.start()
 
     sd.ResetThumb()
     Diffusion.Diffuse()
@@ -590,7 +539,6 @@ ImageActionBox = Box(imageBox, layout="grid", grid=[0,5], border=0, align="left"
 # Saving the image to user defined location.
 #------------------------------------------------------------
 def save_image():
-    #app.info("Not implemented", "Not yet implemented")
     selected_file = app.select_file(title="Save to file", folder=".", filetypes=[["All files", "*.png"]], save=True, filename="")
 
     if (selected_file != ""):
@@ -600,22 +548,6 @@ def save_image():
         shutil.move(sd.GetImage(), selected_file)
         EnableVisuals()
         app.info("Info", "Done!")
-#------------------------------------------------------------
-
-#------------------------------------------------------------
-# Refine image function. Basically the same as Start button.
-#------------------------------------------------------------
-##def refine_image():
-##    if (not app.yesno("WARNING!", "The actual file will be overwritten.\r\nAre you sure?")):
-##        return
-##
-##    #saving project
-##    save_project_data()
-##    
-##    start_measure_processing()
-##    #starting the diffusion
-##    start_diffusing()
-##    return
 #------------------------------------------------------------
 
 #------------------------------------------------------------
@@ -641,9 +573,7 @@ Text(ImageActionBox, grid=[0,0], text="Actions:", align="left", size=9, font="Ar
 Box(ImageActionBox, layout="auto", grid=[1,0], border=0, align="left", width=20, height=20)
 Save_Image_PushButton = PushButton(ImageActionBox, grid=[2,0],text="Save Image", padx=6, pady=2, command=save_image)
 Save_Image_PushButton.font = "Arial"
-#Box(ImageActionBox, layout="auto", grid=[3,0], border=0, align="left", width=20, height=20)
-#Refine_Image_PushButton = PushButton(ImageActionBox, grid=[4,0],text="Refine", padx=6, pady=2, command=refine_image)
-#Refine_Image_PushButton.font = "Arial"
+
 Box(ImageActionBox, layout="auto", grid=[3,0], border=0, align="left", width=20, height=20)
 Delete_Image_PushButton = PushButton(ImageActionBox, grid=[6,0],text="Delete Image", padx=6, pady=2, command=delete_image)
 Delete_Image_PushButton.font = "Arial"
@@ -715,7 +645,6 @@ def DisableVisuals():
 #------------------------------------------------------------
 def DisableImageActionButtons():
     Save_Image_PushButton.enabled = False
-    #Refine_Image_PushButton.enabled = False
     Delete_Image_PushButton.enabled = False
 #------------------------------------------------------------
 
@@ -724,7 +653,6 @@ def DisableImageActionButtons():
 #------------------------------------------------------------
 def EnableImageActionButtons():
     Save_Image_PushButton.enabled = True
-    #Refine_Image_PushButton.enabled = True
     Delete_Image_PushButton.enabled = True
 #------------------------------------------------------------
 
@@ -762,13 +690,13 @@ def get_proc_msg():
 
     if proc_steps > 3:
         proc_steps = 0
-        return "Processing    " + processing_time()
+        return "Processing    " + timer.get()
     elif proc_steps == 3:
-        return "Processing... " + processing_time()
+        return "Processing... " + timer.get()
     elif proc_steps == 2:
-        return "Processing..  " + processing_time()
+        return "Processing..  " + timer.get()
     elif proc_steps == 1:
-        return "Processing.   " + processing_time()
+        return "Processing.   " + timer.get()
 
     return "Processing"
 #------------------------------------------------------------
@@ -781,7 +709,7 @@ def GetThreadStatus():
     global app
     
     if (Diffusion.GetStatus() == True):
-        StatusMSG.value = get_proc_msg()# + " " + Diffusion.GetProgress()#"Processing..."
+        StatusMSG.value = get_proc_msg()
 
         app.title = "OnnxStream GUI - Processing... " + Diffusion.GetProgress()
 
@@ -804,8 +732,9 @@ def GetThreadStatus():
         StatusMSG.value = "Finished! "
         app.title = "OnnxStream GUI"
         pb.Progress(100)
-        stop_measure_processing()
-        StatusMSG.value += processing_time()
+
+        timer.stop()
+        StatusMSG.value += timer.get()
         EnableVisuals()
         Stop_Button.enabled = False
 
